@@ -416,7 +416,7 @@
             },
             annotations: {
               summary: 'Systemd service has entered failed state.',
-              description: 'Systemd service {{ $labels.name }} has entered failed state on {{ $labels.instance }}',
+              description: 'Systemd service {{ $labels.name }} has entered failed state at {{ $labels.instance }}',
             },
           },
         ],
