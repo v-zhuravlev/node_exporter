@@ -137,7 +137,7 @@ local nodeTemplates = common.templates;
       ],
     dashboard: if platform == 'Linux' then
       dashboard.new(
-        '%sNode Overview ' % config { nodeQuerySelector: c.nodeQuerySelector }.dashboardNamePrefix,
+        '%sNode Overview' % config { nodeQuerySelector: c.nodeQuerySelector }.dashboardNamePrefix,
         time_from=config.dashboardInterval,
         tags=(config.dashboardTags),
         timezone=config.dashboardTimezone,
