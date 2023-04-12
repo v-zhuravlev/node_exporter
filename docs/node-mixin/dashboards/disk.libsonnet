@@ -115,7 +115,7 @@ local common = import '../lib/common.libsonnet';
       [
         { type: 'row', title: 'Filesystem', gridPos: { y: 0 } },
         fsAvailable { gridPos: { x: 0, w: 12, h: 8, y: 0 } },
-        c.panelsWithTargets.fsSpaceUsage { gridPos: { x: 12, w: 12, h: 8, y: 0 } },
+        c.panelsWithTargets.diskSpaceUsage { gridPos: { x: 12, w: 12, h: 8, y: 0 } },
         fsInodes { gridPos: { x: 0, w: 12, h: 8, y: 0 } },
         fsInodesTotal { gridPos: { x: 12, w: 12, h: 8, y: 0 } },
         fsErrorsandRO { gridPos: { x: 0, w: 12, h: 8, y: 0 } },
