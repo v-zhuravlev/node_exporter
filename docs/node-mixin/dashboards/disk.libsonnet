@@ -72,7 +72,7 @@ local common = import '../lib/common.libsonnet';
         title='Disk IOps completed',
         description='The number (after merges) of I/O requests completed per second for the device'
       )
-      .withUnits('iops/s')
+      .withUnits('iops')
       .withNegativeYByRegex('reads')
       .withAxisLabel('read(-) / write(+)')
       .addTarget(commonPromTarget(
