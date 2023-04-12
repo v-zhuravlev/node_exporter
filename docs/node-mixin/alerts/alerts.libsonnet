@@ -407,37 +407,6 @@
               description: 'Systemd service {{ $labels.name }} has entered failed state at {{ $labels.instance }}',
             },
           },
-          {
-            alert: 'NodeDiskIOSaturation',
-            expr: |||
-              rate(node_disk_io_time_weighted_seconds_total{%(nodeExporterSelector)s, %(diskDeviceSelector)s}[5m]) > 10
-            ||| % $._config,
-            'for': '30m',
-            labels: {
-              severity: 'warning',
-            },
-            annotations: {
-              summary: 'Disk IO queue is high.',
-              description: |||
-                Disk IO queue (aqu-sq) is high on {{ $labels.device }} at {{ $labels.instance }}, has been above 10 for the last 15 minutes, is currently at {{ printf "%.2f" $value }}.
-                This symptom might indicate disk saturation.,
-              |||,
-            },
-          },
-          {
-            alert: 'NodeSystemdServiceFailed',
-            expr: |||
-              node_systemd_unit_state{%(nodeExporterSelector)s, state="failed"} == 1
-            ||| % $._config,
-            'for': '5m',
-            labels: {
-              severity: 'critical',
-            },
-            annotations: {
-              summary: 'Systemd service has entered failed state.',
-              description: 'Systemd service {{ $labels.name }} has entered failed state at {{ $labels.instance }}',
-            },
-          },
         ],
       },
     ],
