@@ -238,7 +238,7 @@ local nodeTimeseries = nodePanels.timeseries;
             (1 - sum without (mode) (rate(node_cpu_seconds_total{%(nodeQuerySelector)s, mode=~"idle|iowait|steal"}[$__rate_interval])))
           / ignoring(cpu) group_left
             count without (cpu, mode) (node_cpu_seconds_total{%(nodeQuerySelector)s, mode="idle"})
-          )
+          ) * 100
         ||| % config { nodeQuerySelector: nodeQuerySelector },
       memoryTotal:: 'node_memory_MemTotal_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
       memorySwapTotal:: 'node_memory_SwapTotal_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
@@ -320,7 +320,7 @@ local nodeTimeseries = nodePanels.timeseries;
         .withUnits('percent')
         .withStacking('normal')
         .withMin(0)
-        .withMax(1)
+        .withMax(100)
         .addTarget(c.commonPromTarget(
           expr=c.queries.cpuUsagePerCore,
           legendFormat='cpu {{cpu}}',
