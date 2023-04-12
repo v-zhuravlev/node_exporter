@@ -222,7 +222,7 @@ local nodeTimeseries = nodePanels.timeseries;
         |||
           (((count by (%(instanceLabels)s) (count(node_cpu_seconds_total{%(nodeQuerySelector)s}) by (cpu, %(instanceLabels)s))) 
           - 
-          avg by (%(instanceLabels)s) (sum by (%(instanceLabels)s, mode)(irate(node_cpu_seconds_total{mode='idle',%(nodeExporterSelector)s}[5m])))) * 100) 
+          avg by (%(instanceLabels)s) (sum by (%(instanceLabels)s, mode)(irate(node_cpu_seconds_total{mode='idle',%(nodeExporterSelector)s}[$__rate_interval])))) * 100) 
           / 
           count by(%(instanceLabels)s) (count(node_cpu_seconds_total{%(nodeQuerySelector)s}) by (cpu, %(instanceLabels)s))
         ||| % config { nodeQuerySelector: nodeQuerySelector },
