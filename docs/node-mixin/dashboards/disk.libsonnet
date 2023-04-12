@@ -74,7 +74,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('iops')
       .withNegativeYByRegex('reads')
-      .withAxisLabel('read(-) / write(+)')
+      .withAxisLabel('read(-) | write(+)')
       .addTarget(commonPromTarget(
         expr=q.node_disk_reads_completed_total,
         legendFormat='{{device}} reads completed',
@@ -91,7 +91,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('s')
       .withNegativeYByRegex('read')
-      .withAxisLabel('read(-) / write(+)')
+      .withAxisLabel('read(-) | write(+)')
       .addTarget(commonPromTarget(
         expr=q.diskWaitReadTime,
         legendFormat='{{device}} read wait time avg',

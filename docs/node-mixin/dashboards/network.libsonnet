@@ -18,7 +18,12 @@ local common = import '../lib/common.libsonnet';
     local q = c.queries,
 
     local networkTrafficPanel =
-      commonPanels.networkTrafficGraph.new('Network Traffic')
+      commonPanels.networkTrafficGraph.new(
+        'Network Traffic',
+        description=|||
+          Network interfaces utilisation by device and direction.
+        |||
+      )
       .addTarget(commonPromTarget(
         expr=q.networkReceiveBitsPerSec,
         legendFormat='{{device}} received',
@@ -29,22 +34,43 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local networkPacketsPanel =
-      nodeTimeseries.new('Unicast Packets')
+      nodeTimeseries.new(
+        'Packets',
+        description=|||
+          packets received: Number of good packets received by the interface. 
+          For hardware interfaces counts all good packets received from the device by the host, including packets which host had to drop at various stages of processing (even in the driver).
+
+          packets transmitted: Number of packets successfully transmitted. 
+          For hardware interfaces counts packets which host was able to successfully hand over to the device,
+          which does not necessarily mean that packets had been successfully transmitted out of the device, only that device acknowledged it copied them out of host memory.
+
+          https://docs.kernel.org/networking/statistics.html
+        |||
+      )
       .addTarget(commonPromTarget(
-        'irate(node_network_receive_packets_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_receive_packets_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} received',
       ))
       .addTarget(commonPromTarget(
-        'irate(node_network_transmit_packets_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_transmit_packets_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} transmitted',
       ))
       .withDecimals(1)
       .withUnits('pps')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)'),
+      .withAxisLabel('out(-) | in(+)'),
 
     local networkErrorsPanel =
-      nodeTimeseries.new('Network Errors')
+      nodeTimeseries.new(
+        'Network Errors',
+        description=|||
+          errors received: Total number of bad packets received on this network device. This counter must include events counted by rx_length_errors, rx_crc_errors, rx_frame_errors and other errors not otherwise counted.
+
+          errors tranmitted: Total number of transmit problems. This counter must include events counter by tx_aborted_errors, tx_carrier_errors, tx_fifo_errors, tx_heartbeat_errors, tx_window_errors and other errors not otherwise counted.
+
+          https://docs.kernel.org/networking/statistics.html
+        |||
+      )
       .addTarget(commonPromTarget(
         expr=q.networkReceiveErrorsPerSec,
         legendFormat='{{device}} received',
@@ -56,10 +82,18 @@ local common = import '../lib/common.libsonnet';
       .withDecimals(1)
       .withUnits('pps')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)'),
+      .withAxisLabel('out(-) | in(+)'),
 
     local networkDropsPanel =
-      nodeTimeseries.new('Dropped Packets')
+      nodeTimeseries.new(
+        'Dropped Packets',
+        description=|||
+          drops received: Number of packets received but not processed, e.g. due to lack of resources or unsupported protocol. For hardware interfaces this counter may include packets discarded due to L2 address filtering but should not include packets dropped by the device due to buffer exhaustion which are counted separately in rx_missed_errors (since procfs folds those two counters together).
+
+          drops tranmitted: Number of packets dropped on their way to transmission, e.g. due to lack of resources.
+          https://docs.kernel.org/networking/statistics.html
+        |||
+      )
       .addTarget(commonPromTarget(
         expr=q.networkReceiveDropsPerSec,
         legendFormat='{{device}} received',
@@ -71,30 +105,46 @@ local common = import '../lib/common.libsonnet';
       .withDecimals(1)
       .withUnits('pps')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)'),
+      .withAxisLabel('out(-) | in(+)'),
     local networkCompressedPanel =
-      nodeTimeseries.new('Compressed Packets')
+      nodeTimeseries.new(
+        'Compressed Packets',
+        description=|||
+          compressed received: 
+          Number of correctly received compressed packets. This counters is only meaningful for interfaces which support packet compression (e.g. CSLIP, PPP).
+
+          compressed transmitted:
+          Number of transmitted compressed packets. This counters is only meaningful for interfaces which support packet compression (e.g. CSLIP, PPP).
+
+          https://docs.kernel.org/networking/statistics.html
+        |||
+      )
       .addTarget(commonPromTarget(
-        'irate(node_network_receive_compressed_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_receive_compressed_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} received',
       ))
       .addTarget(commonPromTarget(
-        'irate(node_network_transmit_compressed_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_transmit_compressed_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} transmitted',
       ))
       .withDecimals(1)
       .withUnits('pps')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)'),
+      .withAxisLabel('out(-) | in(+)'),
 
     local networkMulticastPanel =
-      nodeTimeseries.new('Multicast Packets')
+      nodeTimeseries.new(
+        'Multicast Packets',
+        description=|||
+          Multicast packets received and transmitted.
+        |||
+      )
       .addTarget(commonPromTarget(
-        'irate(node_network_receive_multicast_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_receive_multicast_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} received',
       ))
       .addTarget(commonPromTarget(
-        'irate(node_network_transmit_multicast_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_transmit_multicast_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} transmitted',
       ))
       .withDecimals(1)
@@ -102,19 +152,26 @@ local common = import '../lib/common.libsonnet';
       .withNegativeYByRegex('transmit'),
 
     local networkFifoPanel =
-      nodeTimeseries.new('Network FIFO')
+      nodeTimeseries.new(
+        'Network FIFO',
+        description=|||
+          Network FIFO (First-In, First-Out) refers to a buffer used by the network stack to store packets in a queue.
+          It is a mechanism used to manage network traffic and ensure that packets are delivered to their destination in the order they were received.
+          Packets are stored in the FIFO buffer until they can be transmitted or processed further.
+        |||
+      )
       .addTarget(commonPromTarget(
-        'irate(node_network_receive_fifo_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_receive_fifo_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} received',
       ))
       .addTarget(commonPromTarget(
-        'irate(node_network_transmit_fifo_total{%(nodeQuerySelector)s,}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        'irate(node_network_transmit_fifo_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='{{device}} transmitted',
       ))
       .withDecimals(1)
       .withUnits('pps')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)'),
+      .withAxisLabel('out(-) | in(+)'),
 
     local networkNFConntrack =
       nodeTimeseries.new('NF Conntrack')
@@ -129,7 +186,12 @@ local common = import '../lib/common.libsonnet';
       .withFillOpacity(0),
 
     local networkSoftnetPanel =
-      nodeTimeseries.new('Softnet Packets')
+      nodeTimeseries.new(
+        'Softnet Packets',
+        description=|||
+          Softnet packets are received by the network and queued for processing by the kernel's networking stack.
+          Softnet packets are usually generated by network traffic that is directed to the local host, and they are typically processed by the kernel's networking subsystem before being passed on to the relevant application. 
+        |||)
       .addTarget(commonPromTarget(
         'irate(node_softnet_processed_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='CPU {{cpu }} proccessed',
@@ -144,7 +206,12 @@ local common = import '../lib/common.libsonnet';
       .withAxisLabel('Dropped(-) | Processed(+)'),
 
     local networkSoftnetSqueezePanel =
-      nodeTimeseries.new('Softnet Out of Quota')
+      nodeTimeseries.new(
+        'Softnet Out of Quota',
+        description=|||
+          "Softnet Out of Quota" is a network-related metric in Linux that measures the number of times the kernel's softirq processing was unable to handle incoming network traffic due to insufficient softirq processing capacity.
+          This means that the kernel has reached its processing capacity limit for incoming packets, and any additional packets will be dropped or deferred.
+        |||)
       .addTarget(commonPromTarget(
         'irate(node_softnet_times_squeezed_total{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='CPU {{cpu}} out of quota',
@@ -531,7 +598,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('oct/s')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_netstat_IpExt_InOctets{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='Octets received'
@@ -548,7 +615,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('seg/s')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_netstat_Tcp_InSegs{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='TCP received'
@@ -594,7 +661,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('dat/s')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_netstat_Udp_InDatagrams{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='UDP received'
@@ -661,7 +728,7 @@ local common = import '../lib/common.libsonnet';
       )
       .withUnits('msg/s')
       .withNegativeYByRegex('transmit')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_netstat_Icmp_InMsgs{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='ICMP received'

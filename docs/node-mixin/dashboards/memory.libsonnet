@@ -30,7 +30,7 @@ local common = import '../lib/common.libsonnet';
         |||
       )
       .withNegativeYByRegex('out')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_vmstat_pgpgin{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='Page-In'
@@ -53,7 +53,7 @@ local common = import '../lib/common.libsonnet';
         |||
       )
       .withNegativeYByRegex('out')
-      .withAxisLabel('out(-) / in(+)')
+      .withAxisLabel('out(-) | in(+)')
       .addTarget(commonPromTarget(
         expr='irate(node_vmstat_pswpin{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='Pages swapped in'
