@@ -74,6 +74,7 @@ local nodeTimeseries = nodePanels.timeseries;
           // do not use .+ will ignore nodeExporterSelector results
           // use null for group values
           allValues=null,
+          multi=true,
           sort=1
         )
         {
