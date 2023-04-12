@@ -26,7 +26,7 @@ local common = import '../lib/common.libsonnet';
         legendFormat='Pagesin - Page in operations'
       ))
       .addTarget(commonPromTarget(
-        expr='irate(node_vmstat_pgpgin{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
+        expr='irate(node_vmstat_pgpgout{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='Pagesout - Page out operations'
       )),
     local memoryPagesSwapInOut =
