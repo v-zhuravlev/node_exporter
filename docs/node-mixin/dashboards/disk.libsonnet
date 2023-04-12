@@ -19,7 +19,12 @@ local common = import '../lib/common.libsonnet';
     local q = c.queries,
 
     local fsAvailable =
-      nodeTimeseries.new('Filesystem Space Available')
+      nodeTimeseries.new(
+        'Filesystem Space Available',
+        description=|||
+          Filesystem space utilisation in bytes, by mountpoint.
+        |||
+      )
       .withUnits('decbytes')
       .withFillOpacity(5)
       .addTarget(commonPromTarget(
@@ -28,7 +33,10 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local fsInodes =
-      nodeTimeseries.new('Free inodes')
+      nodeTimeseries.new(
+        'Free inodes',
+        description='The inode is a data structure in a Unix-style file system that describes a file-system object such as a file or a directory.',
+      )
       .withUnits('short')
       .addTarget(commonPromTarget(
         expr=q.node_filesystem_files_free,
@@ -39,7 +47,10 @@ local common = import '../lib/common.libsonnet';
         legendFormat='{{ mountpoint }}'
       )),
     local fsInodesTotal =
-      nodeTimeseries.new('Total inodes')
+      nodeTimeseries.new(
+        'Total inodes',
+        description='The inode is a data structure in a Unix-style file system that describes a file-system object such as a file or a directory.',
+      )
       .withUnits('short')
       .addTarget(commonPromTarget(
         expr=q.node_filesystem_files,
@@ -57,7 +68,13 @@ local common = import '../lib/common.libsonnet';
         legendFormat='{{ mountpoint }}'
       )),
     local fileDescriptors =
-      nodeTimeseries.new('File Descriptors')
+      nodeTimeseries.new(
+        'File Descriptors',
+        description=|||
+          File descriptor is a handle to an open file or input/output (I/O) resource, such as a network socket or a pipe.
+          The operating system uses file descriptors to keep track of open files and I/O resources, and provides a way for programs to read from and write to them.
+        |||
+      )
       .addTarget(commonPromTarget(
         expr=q.process_max_fds,
         legendFormat='Maximum open file descriptors',
