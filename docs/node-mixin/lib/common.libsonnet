@@ -306,7 +306,7 @@ local nodeTimeseries = nodePanels.timeseries;
       node_timex_maxerror_seconds:: 'node_timex_maxerror_seconds{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
 
       node_timex_sync_status:: 'node_timex_sync_status{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
-
+      node_time_zone_offset_seconds:: 'node_time_zone_offset_seconds{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
       node_systemd_units:: 'node_systemd_units{%(nodeQuerySelector)s}' % config { nodeQuerySelector: nodeQuerySelector },
 
 
@@ -361,7 +361,8 @@ local nodeTimeseries = nodePanels.timeseries;
       cpuStatPanel::
         commonPanels.percentUsageStat.new(
           'CPU Usage',
-          description="Total CPU utilisation percent.")
+          description='Total CPU utilisation percent.'
+        )
         .addTarget(c.commonPromTarget(
           expr=c.queries.cpuUsage
         )),
@@ -371,9 +372,10 @@ local nodeTimeseries = nodePanels.timeseries;
           description=|||
             Context switches occur when the operating system switches from running one process to another.
             Interrupts are signals sent to the CPU by external devices to request its attention.
-            
+
             A high number of context switches or interrupts can indicate that the system is overloaded or that there are problems with specific devices or processes.
-          |||)
+          |||
+        )
         .addTarget(c.commonPromTarget(c.queries.systemContextSwitches, legendFormat='Context Switches'))
         .addTarget(c.commonPromTarget(c.queries.systemInterrupts, legendFormat='Interrupts')),
 

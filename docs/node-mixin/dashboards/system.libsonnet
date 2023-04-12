@@ -18,7 +18,19 @@ local common = import '../lib/common.libsonnet';
     local q = c.queries,
 
     local cpuUsageModes =
-      nodeTimeseries.new('CPU Usage')
+      nodeTimeseries.new(
+        'CPU Usage',
+        description=|||
+          System: Processes executing in kernel mode.
+          User: Normal processes executing in user mode.
+          Nice: Niced processes executing in user mode.
+          Idle: Waiting for something to happen.
+          Iowait: Waiting for I/O to complete.
+          Irq: Servicing interrupts.
+          Softirq: Servicing softirqs.
+          Steal: Time spent in other operating systems when running in a virtualized environment.
+        |||
+      )
       .withStacking('normal')
       .withUnits('percent')
       .withFillOpacity(100)
@@ -28,9 +40,22 @@ local common = import '../lib/common.libsonnet';
         expr=q.cpuUsageModes,
         legendFormat='{{mode}}',
       )),
-
+    local timeZoneOffset =
+      commonPanels.infoStat.new(
+        'Timezone',
+        description='Timezone set on instance.'
+      )
+      .addTarget(commonPromTarget(
+        expr=q.node_time_zone_offset_seconds, format='table'
+      ))
+      { options+: { reduceOptions+: { fields: '/^time_zone$/' } } },
     local timeSyncDrift =
-      nodeTimeseries.new('Time Syncronized Drift')
+      nodeTimeseries.new(
+        'Time Syncronized Drift',
+        description=|||
+          Time synchronization is essential to ensure accurate timekeeping, which is critical for many system operations such as logging, authentication, and network communication, as well as distributed systems or clusters where data consistency is important.
+        |||
+      )
       .withUnits('s')
       .addTarget(commonPromTarget(
         expr=q.node_timex_estimated_error_seconds,
@@ -46,7 +71,10 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local timeSyncronizedStatus =
-      nodeTimeseries.new('Time Syncronized Status')
+      nodeTimeseries.new(
+        'Time Syncronized Status',
+        description='Status of time syncronization.'
+      )
       .withColor(mode='palette-classic')
       .withFillOpacity(75)
       .withLegend(show=false)
@@ -96,8 +124,9 @@ local common = import '../lib/common.libsonnet';
         c.panelsWithTargets.systemLoad { gridPos: { x: 0, h: 6, w: 12, y: 25 } },
         c.panelsWithTargets.systemContextSwitches { gridPos: { x: 12, h: 6, w: 12, y: 25 } },
         { type: 'row', title: 'Time', gridPos: { x: 0, w: 24, y: 75 } },
-        timeSyncronizedStatus { gridPos: { x: 0, h: 3, w: 24, y: 75 } },
-        timeSyncDrift { gridPos: { x: 0, h: 6, w: 24, y: 75 } },
+        timeZoneOffset { gridPos: { x: 0, h: 3, w: 3, y: 75 } },
+        timeSyncronizedStatus { gridPos: { x: 3, h: 3, w: 21, y: 75 } },
+        timeSyncDrift { gridPos: { x: 0, h: 6, w: 24, y: 80 } },
       ],
 
     dashboard: if platform == 'Linux' then
