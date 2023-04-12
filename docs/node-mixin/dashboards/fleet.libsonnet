@@ -74,8 +74,6 @@ local common = import '../lib/common.libsonnet';
       ) { refId: 'WARNING' })
       .withTransform()
       .joinByField(field=std.split(config.instanceLabels, ',')[0])
-      //disable kernel and os:
-      //.filterFieldsByName('instance|pretty_name|nodename|release|Value.+')
       .filterFieldsByName(std.split(config.instanceLabels, ',')[0] + '|nodename|Value.+')
       .organize(
         excludeByName={
@@ -108,7 +106,6 @@ local common = import '../lib/common.libsonnet';
         'Value #MEMUSAGE',
         'Value #CPUUSAGE',
       ])
-      //.addThresholdStep(color='light-green', value=null)
       .addThresholdStep(color='light-blue', value=null)
       .addThresholdStep(color='light-yellow', value=80)
       .addThresholdStep(color='light-red', value=90)

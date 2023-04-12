@@ -277,15 +277,8 @@ local common = import '../lib/common.libsonnet';
         format='table',
         instant=true,
       ))
-      // "VALUE #J"
-      // .addTarget(commonPromTarget(
-      //   expr='node_network_protocol_type{%(nodeQuerySelector)s}' % config {nodeQuerySelector: c.nodeQuerySelector},
-      //   format="table",
-      //   instant=true,
-      // ))
       .withTransform()
       .joinByField(field='device')
-      // .merge()
       .filterFieldsByName('device|address|duplex|Value.+')
       .organize(
         excludeByName={
@@ -304,7 +297,6 @@ local common = import '../lib/common.libsonnet';
           'Value #F': 'MTU',
           'Value #G': 'Speed',
           'Value #H': 'Queue length',
-          // "Value #J": "Type",
         }
       )
       .addOverride(
@@ -351,50 +343,6 @@ local common = import '../lib/common.libsonnet';
           },
         ]
       )
-      // TODO
-      // possible values: https://github.com/torvalds/linux/blob/master/include/uapi/linux/if_arp.h
-      // .addOverride(
-      //   matcher={
-      //     id: 'byName',
-      //     options: 'Type',
-      //   },
-      //   properties=[
-      //     {
-      //       "id": "mappings",
-      //       "value": [
-      //         {
-      //           "type": "value",
-      //           "options": {
-      //             "0": {
-      //               "text": "NET/ROM pseudo",
-      //               "index": 0
-      //             },
-      //             "1": {
-      //               "text": "Ethernet 10Mbps",
-      //               "index": 1
-      //             },
-      //             "2": {
-      //               "text": "Experimental Ethernet",
-      //               "index": 2
-      //             },
-      //             "3": {
-      //               "text": "AX.25 Level 2",
-      //               "index": 3
-      //             },
-      //             "4": {
-      //               "text": "PROnet token ring",
-      //               "index": 4
-      //             },
-      //             "5": {
-      //               "text": "Chaosnet",
-      //               "index": 5
-      //             },
-      //           }
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // )
       .addOverride(
         matcher={
           id: 'byRegexp',

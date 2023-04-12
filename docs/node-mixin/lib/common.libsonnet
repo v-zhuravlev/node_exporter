@@ -70,9 +70,7 @@ local nodeTimeseries = nodePanels.timeseries;
           current='',
           refresh=2,
           includeAll=true,
-          // do not use .* will get series without such label at all when ALL is selected.
-          // do not use .+ will ignore nodeExporterSelector results
-          // use null for group values
+          // do not use .*, will get series without such label at all when ALL is selected, ignoring nodeExporterSelector results
           allValues=null,
           multi=true,
           sort=1
@@ -466,10 +464,6 @@ local nodeTimeseries = nodePanels.timeseries;
               id: 'unit',
               value: 'percentunit',
             },
-            // {
-            //   id: 'custom.displayMode',
-            //   value: 'gradient-gauge',
-            // },
             {
               id: 'custom.displayMode',
               value: 'basic',
@@ -558,18 +552,6 @@ local nodeTimeseries = nodePanels.timeseries;
                 },
               },
             },
-
-            // {
-            //   id: 'sortBy',
-            //   options: {
-            //     fields: {},
-            //     sort: [
-            //       {
-            //         field: 'Mounted on',
-            //       },
-            //     ],
-            //   },
-            // },
           ],
         },
       memoryGraphPanelPrototype::

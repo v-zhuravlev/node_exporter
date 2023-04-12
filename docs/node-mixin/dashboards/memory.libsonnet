@@ -73,10 +73,6 @@ local common = import '../lib/common.libsonnet';
           Valid page faults are common and necessary to increase memory availability in any operating system that uses virtual memory, including Windows, macOS, and the Linux kernel.
         |||
       )
-      // .addTarget(commonPromTarget(
-      //   expr='irate(node_vmstat_pgfault{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
-      //   legendFormat='Pgfault - Page major and minor fault operations'
-      // ))
       .addTarget(commonPromTarget(
         expr='irate(node_vmstat_pgmajfault{%(nodeQuerySelector)s}[$__rate_interval])' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='Major page fault operations'
@@ -105,11 +101,12 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryActiveInactive =
-      nodeTimeseries.new('Memory Active / Inactive',
-                         description=|||
-                           Inactive: Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes.
-                           Active: Memory that has been used more recently and usually not reclaimed unless absolutely necessary.
-                         |||)
+      nodeTimeseries.new(
+        'Memory Active / Inactive',
+        description=|||
+          Inactive: Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes.
+          Active: Memory that has been used more recently and usually not reclaimed unless absolutely necessary.
+        |||)
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Inactive_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },

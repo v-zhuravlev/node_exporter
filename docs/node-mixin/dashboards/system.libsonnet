@@ -86,13 +86,6 @@ local common = import '../lib/common.libsonnet';
         legendFormat='Sync status',
       )),
 
-    // local systemdStates =
-    //   nodeTimeseries.new('Systemd Units States')
-    //   .addTarget(commonPromTarget(
-    //     expr=q.node_systemd_units,
-    //     legendFormat='{{ state }}'
-    //   )),
-
     local panelsGrid =
       [
         //use negative gravity(skip y), max w=24, default h should be '6'.
@@ -102,9 +95,6 @@ local common = import '../lib/common.libsonnet';
         //pseudorow y:25
         c.panelsWithTargets.systemLoad { gridPos: { x: 0, h: 6, w: 12, y: 25 } },
         c.panelsWithTargets.systemContextSwitches { gridPos: { x: 12, h: 6, w: 12, y: 25 } },
-        // systemd collector is off by default
-        // { type: 'row', title: 'Systemd', gridPos: { x: 0, w: 24, y: 50 } },
-        // systemdStates { gridPos: { x: 0, h: 6, w: 12, y: 50 } },
         { type: 'row', title: 'Time', gridPos: { x: 0, w: 24, y: 75 } },
         timeSyncronizedStatus { gridPos: { x: 0, h: 3, w: 24, y: 75 } },
         timeSyncDrift { gridPos: { x: 0, h: 6, w: 24, y: 75 } },

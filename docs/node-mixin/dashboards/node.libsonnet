@@ -5,6 +5,7 @@
   local memory = import './memory.libsonnet',
   local disk = import './disk.libsonnet',
   local network = import './network.libsonnet',
+  local fleet = import './fleet.libsonnet',
 
   grafanaDashboards+:: {
     'nodes.json': nodemixin.new(config=$._config, platform='Linux').dashboard,
@@ -13,6 +14,6 @@
     'nodes-memory.json': memory.new(config=$._config, platform='Linux').dashboard,
     'nodes-network.json': network.new(config=$._config, platform='Linux').dashboard,
     'nodes-disk.json': disk.new(config=$._config, platform='Linux').dashboard,
-    'nodes-fleet.json': (import './fleet.libsonnet').new(config=$._config, platform='Linux').dashboard,
+    'nodes-fleet.json': fleet.new(config=$._config, platform='Linux').dashboard,
   },
 }
