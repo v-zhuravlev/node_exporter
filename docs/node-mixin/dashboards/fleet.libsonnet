@@ -63,12 +63,12 @@ local common = import '../lib/common.libsonnet';
         instant=true,
       ) { refId: 'FSUSAGE' })
       .addTarget(commonPromTarget(
-        expr='count by (%(instanceLabels)s) (max_over_time(ALERTS{%(nodeQuerySelector)s, alertstate="firing", severity="critical"}[1m])) * group by (%(instanceLabels)s) (node_uname_info{})' % config { nodeQuerySelector: c.nodeQuerySelector },
+        expr='count by (%(instanceLabels)s) (max_over_time(ALERTS{%(nodeQuerySelector)s, alertstate="firing", severity="critical"}[1m])) * group by (%(instanceLabels)s) (node_uname_info{%(nodeQuerySelector)s})' % config { nodeQuerySelector: c.nodeQuerySelector },
         format='table',
         instant=true
       ) { refId: 'CRITICAL' })
       .addTarget(commonPromTarget(
-        expr='count by (%(instanceLabels)s) (max_over_time(ALERTS{%(nodeQuerySelector)s, alertstate="firing", severity="warning"}[1m])) * group by (%(instanceLabels)s) (node_uname_info{})' % config { nodeQuerySelector: c.nodeQuerySelector },
+        expr='count by (%(instanceLabels)s) (max_over_time(ALERTS{%(nodeQuerySelector)s, alertstate="firing", severity="warning"}[1m])) * group by (%(instanceLabels)s) (node_uname_info{%(nodeQuerySelector)s})' % config { nodeQuerySelector: c.nodeQuerySelector },
         format='table',
         instant=true
       ) { refId: 'WARNING' })
