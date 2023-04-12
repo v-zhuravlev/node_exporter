@@ -607,7 +607,10 @@ local nodeTimeseries = nodePanels.timeseries;
 
       // NOTE: avg() is used to circumvent a label change caused by a node_exporter rollout.
       memoryGaugePanelPrototype::
-        commonPanels.percentUsageStat.new('Memory Usage'),
+        commonPanels.percentUsageStat.new(
+          'Memory Usage',
+          description='Total memory utilisation.',
+        ),
 
       memoryGauge::
         if platform == 'Linux' then
