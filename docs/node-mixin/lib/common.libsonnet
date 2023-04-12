@@ -379,9 +379,10 @@ local nodeTimeseries = nodePanels.timeseries;
         .addTarget(c.commonPromTarget(c.queries.systemContextSwitches, legendFormat='Context Switches'))
         .addTarget(c.commonPromTarget(c.queries.systemInterrupts, legendFormat='Interrupts')),
 
-      fsSpaceUsage::
+      diskSpaceUsage::
         nodePanels.table.new(
-          title='Filesystem Space Usage'
+          title='Disk Space Usage',
+          description='Disk utilisation in percent, by mountpoint. Some duplication can occur if the same filesystem is mounted in multiple locations.',
         )
         .setFieldConfig(unit='decbytes')
         //.addThresholdStep(color='light-green', value=null)
@@ -572,7 +573,10 @@ local nodeTimeseries = nodePanels.timeseries;
           ],
         },
       memoryGraphPanelPrototype::
-        nodePanels.timeseries.new('Memory Usage')
+        nodePanels.timeseries.new(
+          'Memory Usage',
+          description='Memory usage by category, measured in bytes.',
+        )
         .withMin(0)
         .withUnits('bytes'),
       memoryGraph::
@@ -663,7 +667,10 @@ local nodeTimeseries = nodePanels.timeseries;
             ||| % config { nodeQuerySelector: c.nodeQuerySelector }
           )),
       diskIO::
-        nodePanels.timeseries.new('Disk I/O')
+        nodePanels.timeseries.new(
+          'Disk I/O',
+          description='Disk read/writes in bytes, and total IO seconds.'
+        )
         .withFillOpacity(0)
         .withMin(0)
         .addTarget(c.commonPromTarget(
