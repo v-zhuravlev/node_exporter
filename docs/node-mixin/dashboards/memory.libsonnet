@@ -18,15 +18,17 @@ local common = import '../lib/common.libsonnet';
     local q = c.queries,
 
     local memoryPagesInOut =
-      nodeTimeseries.new('Memory Pages In / Out',
-      description=|||
-        Page-In - Return of pages to physical memory. This is a common and normal event.
-        
-        Page-Out - process of writing pages to disk. Unlike page-in, page-outs can indicate trouble.
-        When the kernel detects low memory, it attempts to free memory by paging out. 
-        While occasional page-outs are normal, excessive and frequent page-outs can lead to thrashing.
-        Thrashing is a state in which the kernel spends more time managing paging activity than running applications, resulting in poor system performance.
-      |||)
+      nodeTimeseries.new(
+        'Memory Pages In / Out',
+        description=|||
+          Page-In - Return of pages to physical memory. This is a common and normal event.
+
+          Page-Out - process of writing pages to disk. Unlike page-in, page-outs can indicate trouble.
+          When the kernel detects low memory, it attempts to free memory by paging out. 
+          While occasional page-outs are normal, excessive and frequent page-outs can lead to thrashing.
+          Thrashing is a state in which the kernel spends more time managing paging activity than running applications, resulting in poor system performance.
+        |||
+      )
       .withNegativeYByRegex('out')
       .withAxisLabel('out(-) / in(+)')
       .addTarget(commonPromTarget(
@@ -38,16 +40,18 @@ local common = import '../lib/common.libsonnet';
         legendFormat='Page-Out'
       )),
     local memoryPagesSwapInOut =
-      nodeTimeseries.new('Memory Pages Swapping In / Out',
-      description=|||
-        Compared to the speed of the CPU and main memory, writing pages out to disk is relatively slow.
-        Nonetheless, it is a preferable option to crashing or killing off processes.
-        
-        The process of writing pages out to disk to free memory is known as swapping-out.
-        If a page fault occurs because the page is on disk, in the swap area, rather than in memory,
-        the kernel will read the page back in from the disk to satisfy the page fault. 
-        This is known as swapping-in.
-      |||)
+      nodeTimeseries.new(
+        'Memory Pages Swapping In / Out',
+        description=|||
+          Compared to the speed of the CPU and main memory, writing pages out to disk is relatively slow.
+          Nonetheless, it is a preferable option to crashing or killing off processes.
+
+          The process of writing pages out to disk to free memory is known as swapping-out.
+          If a page fault occurs because the page is on disk, in the swap area, rather than in memory,
+          the kernel will read the page back in from the disk to satisfy the page fault. 
+          This is known as swapping-in.
+        |||
+      )
       .withNegativeYByRegex('out')
       .withAxisLabel('out(-) / in(+)')
       .addTarget(commonPromTarget(
@@ -88,11 +92,13 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryOOMkiller =
-      nodeTimeseries.new('OOM Killer',
-      description=|||
-        Out Of Memory Killer is a process used by the Linux kernel when the system is running critically low on memory.
-        This can happen when the kernel has allocated more memory than is available for its processes.
-      |||)
+      nodeTimeseries.new(
+        'OOM Killer',
+        description=|||
+          Out Of Memory Killer is a process used by the Linux kernel when the system is running critically low on memory.
+          This can happen when the kernel has allocated more memory than is available for its processes.
+        |||
+      )
       .addTarget(commonPromTarget(
         expr='increase(node_vmstat_oom_kill{%(nodeQuerySelector)s}[$__interval] offset -$__interval)' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='OOM killer invocations'
@@ -100,10 +106,10 @@ local common = import '../lib/common.libsonnet';
 
     local memoryActiveInactive =
       nodeTimeseries.new('Memory Active / Inactive',
-      description=|||
-        Inactive: Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes.
-        Active: Memory that has been used more recently and usually not reclaimed unless absolutely necessary.
-      |||)
+                         description=|||
+                           Inactive: Memory which has been less recently used.  It is more eligible to be reclaimed for other purposes.
+                           Active: Memory that has been used more recently and usually not reclaimed unless absolutely necessary.
+                         |||)
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Inactive_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -115,13 +121,15 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryActiveInactiveDetail =
-      nodeTimeseries.new('Memory Active / Inactive Details',
-      description=|||
-        Inactive_file: File-backed memory on inactive LRU list.
-        Inactive_anon: Anonymous and swap cache on inactive LRU list, including tmpfs (shmem).
-        Active_file: File-backed memory on active LRU list.
-        Active_anon: Anonymous and swap cache on active least-recently-used (LRU) list, including tmpfs.
-      |||)
+      nodeTimeseries.new(
+        'Memory Active / Inactive Details',
+        description=|||
+          Inactive_file: File-backed memory on inactive LRU list.
+          Inactive_anon: Anonymous and swap cache on inactive LRU list, including tmpfs (shmem).
+          Active_file: File-backed memory on active LRU list.
+          Active_anon: Anonymous and swap cache on active least-recently-used (LRU) list, including tmpfs.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Inactive_file_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -141,11 +149,13 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryCommited =
-      nodeTimeseries.new('Memory Commited',
-      description=|||
-        Committed_AS - Amount of memory presently allocated on the system.
-        CommitLimit - Amount of memory currently available to be allocated on the system.
-      |||)
+      nodeTimeseries.new(
+        'Memory Commited',
+        description=|||
+          Committed_AS - Amount of memory presently allocated on the system.
+          CommitLimit - Amount of memory currently available to be allocated on the system.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Committed_AS_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -156,13 +166,15 @@ local common = import '../lib/common.libsonnet';
         legendFormat='CommitLimit'
       )),
     local memorySharedAndMapped =
-      nodeTimeseries.new('Memory Shared and Mapped',
-      description=|||
-        Mapped: This refers to the memory used in mapped page files that have been mmaped, such as libraries.
-        Shmem: This is the memory used by shared memory, which is shared between multiple processes, including RAM disks.
-        ShmemHugePages: This is the memory used by shared memory and tmpfs allocated with huge pages.
-        ShmemPmdMapped: This is the amount of shared memory (shmem/tmpfs) backed by huge pages.
-      |||)
+      nodeTimeseries.new(
+        'Memory Shared and Mapped',
+        description=|||
+          Mapped: This refers to the memory used in mapped page files that have been mmaped, such as libraries.
+          Shmem: This is the memory used by shared memory, which is shared between multiple processes, including RAM disks.
+          ShmemHugePages: This is the memory used by shared memory and tmpfs allocated with huge pages.
+          ShmemPmdMapped: This is the amount of shared memory (shmem/tmpfs) backed by huge pages.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Mapped_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -182,12 +194,14 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryWriteAndDirty =
-      nodeTimeseries.new('Memory Writeback and Dirty',
-      description=|||
-        Writeback: This refers to the memory that is currently being actively written back to the disk.
-        WritebackTmp: This is the memory used by FUSE for temporary writeback buffers.
-        Dirty: This type of memory is waiting to be written back to the disk.
-      |||)
+      nodeTimeseries.new(
+        'Memory Writeback and Dirty',
+        description=|||
+          Writeback: This refers to the memory that is currently being actively written back to the disk.
+          WritebackTmp: This is the memory used by FUSE for temporary writeback buffers.
+          Dirty: This type of memory is waiting to be written back to the disk.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Writeback_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -203,14 +217,16 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryVmalloc =
-      nodeTimeseries.new('Memory Vmalloc',
-      description=|||
-        Virtual Memory Allocation is a type of memory allocation in Linux that allows a process to request a contiguous block of memory larger than the amount of physically available memory. This is achieved by mapping the requested memory to virtual addresses that are backed by a combination of physical memory and swap space on disk.
+      nodeTimeseries.new(
+        'Memory Vmalloc',
+        description=|||
+          Virtual Memory Allocation is a type of memory allocation in Linux that allows a process to request a contiguous block of memory larger than the amount of physically available memory. This is achieved by mapping the requested memory to virtual addresses that are backed by a combination of physical memory and swap space on disk.
 
-        VmallocChunk: Largest contiguous block of vmalloc area which is free.
-        VmallocTotal: Total size of vmalloc memory area.
-        VmallocUsed: Amount of vmalloc area which is used.
-      |||)
+          VmallocChunk: Largest contiguous block of vmalloc area which is free.
+          VmallocTotal: Total size of vmalloc memory area.
+          VmallocUsed: Amount of vmalloc area which is used.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_VmallocChunk_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -227,14 +243,14 @@ local common = import '../lib/common.libsonnet';
 
     local memorySlab =
       nodeTimeseries.new('Memory Slab',
-      description=|||
-        Slab Allocation is a type of memory allocation in Linux that allows the kernel to efficiently manage the allocation and deallocation of small and frequently used data structures, such as network packets, file system objects, and process descriptors.
+                         description=|||
+                           Slab Allocation is a type of memory allocation in Linux that allows the kernel to efficiently manage the allocation and deallocation of small and frequently used data structures, such as network packets, file system objects, and process descriptors.
 
-        The Slab Allocator maintains a cache of pre-allocated objects of a fixed size and type, called slabs. When an application requests an object of a particular size and type, the Slab Allocator checks if a pre-allocated object of that size and type is available in the cache. If an object is available, it is returned to the application; if not, a new slab of objects is allocated and added to the cache.
+                           The Slab Allocator maintains a cache of pre-allocated objects of a fixed size and type, called slabs. When an application requests an object of a particular size and type, the Slab Allocator checks if a pre-allocated object of that size and type is available in the cache. If an object is available, it is returned to the application; if not, a new slab of objects is allocated and added to the cache.
 
-        SUnreclaim: Part of Slab, that cannot be reclaimed on memory pressure.
-        SReclaimable: Part of Slab, that might be reclaimed, such as caches.
-      |||)
+                           SUnreclaim: Part of Slab, that cannot be reclaimed on memory pressure.
+                           SReclaimable: Part of Slab, that might be reclaimed, such as caches.
+                         |||)
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_SUnreclaim_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -246,19 +262,21 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryAnonymous =
-      nodeTimeseries.new('Memory Anonymous',
-      description=|||
-        Memory Anonymous refers to the portion of the virtual memory that is used by a process for dynamically allocated memory that is not backed by any file or device.
-        
-        This type of memory is commonly used for heap memory allocation, which is used by programs to allocate and free memory dynamically during runtime.
+      nodeTimeseries.new(
+        'Memory Anonymous',
+        description=|||
+          Memory Anonymous refers to the portion of the virtual memory that is used by a process for dynamically allocated memory that is not backed by any file or device.
 
-        Memory Anonymous is different from Memory Mapped files, which refer to portions of the virtual memory space that are backed by a file or device,
-        and from Memory Shared with other processes,
-        which refers to memory regions that can be accessed and modified by multiple processes.
+          This type of memory is commonly used for heap memory allocation, which is used by programs to allocate and free memory dynamically during runtime.
 
-        AnonHugePages: Memory in anonymous huge pages.
-        AnonPages: Memory in user pages not backed by files.
-      |||)
+          Memory Anonymous is different from Memory Mapped files, which refer to portions of the virtual memory space that are backed by a file or device,
+          and from Memory Shared with other processes,
+          which refers to memory regions that can be accessed and modified by multiple processes.
+
+          AnonHugePages: Memory in anonymous huge pages.
+          AnonPages: Memory in user pages not backed by files.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_AnonHugePages_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -270,14 +288,16 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryHugePagesCounter =
-      nodeTimeseries.new('Memory HugePages Counter',
-      description=|||
-        Huge Pages are a feature that allows for the allocation of larger memory pages than the standard 4KB page size. By using larger page sizes, the kernel can reduce the overhead associated with managing a large number of smaller pages, which can improve system performance for certain workloads.
+      nodeTimeseries.new(
+        'Memory HugePages Counter',
+        description=|||
+          Huge Pages are a feature that allows for the allocation of larger memory pages than the standard 4KB page size. By using larger page sizes, the kernel can reduce the overhead associated with managing a large number of smaller pages, which can improve system performance for certain workloads.
 
-        HugePages_Free: Huge pages in the pool that are not yet allocated.
-        HugePages_Rsvd: Huge pages for which a commitment to allocate from the pool has been made, but no allocation has yet been made.
-        HugePages_Surp: Huge pages in the pool above the value in /proc/sys/vm/nr_hugepages.
-      |||)
+          HugePages_Free: Huge pages in the pool that are not yet allocated.
+          HugePages_Rsvd: Huge pages for which a commitment to allocate from the pool has been made, but no allocation has yet been made.
+          HugePages_Surp: Huge pages in the pool above the value in /proc/sys/vm/nr_hugepages.
+        |||
+      )
       .addTarget(commonPromTarget(
         expr='node_memory_HugePages_Free{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
         legendFormat='HugePages_Free'
@@ -291,10 +311,12 @@ local common = import '../lib/common.libsonnet';
         legendFormat='HugePages_Surp'
       )),
     local memoryHugePagesSize =
-      nodeTimeseries.new('Memory HugePages Size',
-      description=|||
-        Huge Pages are a feature that allows for the allocation of larger memory pages than the standard 4KB page size. By using larger page sizes, the kernel can reduce the overhead associated with managing a large number of smaller pages, which can improve system performance for certain workloads.
-      |||)
+      nodeTimeseries.new(
+        'Memory HugePages Size',
+        description=|||
+          Huge Pages are a feature that allows for the allocation of larger memory pages than the standard 4KB page size. By using larger page sizes, the kernel can reduce the overhead associated with managing a large number of smaller pages, which can improve system performance for certain workloads.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_HugePages_Total{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -305,10 +327,12 @@ local common = import '../lib/common.libsonnet';
         legendFormat='Huge page size'
       )),
     local memoryDirectMap =
-      nodeTimeseries.new('Memory Direct Map',
-      description=|||
-        Direct Map memory refers to the portion of the kernel's virtual address space that is directly mapped to physical memory. This mapping is set up by the kernel during boot time and is used to provide fast access to certain critical kernel data structures, such as page tables and interrupt descriptor tables.
-      |||)
+      nodeTimeseries.new(
+        'Memory Direct Map',
+        description=|||
+          Direct Map memory refers to the portion of the kernel's virtual address space that is directly mapped to physical memory. This mapping is set up by the kernel during boot time and is used to provide fast access to certain critical kernel data structures, such as page tables and interrupt descriptor tables.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_DirectMap1G_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },
@@ -324,14 +348,16 @@ local common = import '../lib/common.libsonnet';
       )),
 
     local memoryBounce =
-      nodeTimeseries.new('Memory Bounce',
-      description=|||
-        Memory bounce is a technique used in the Linux kernel to handle situations where direct memory access (DMA) is required but the physical memory being accessed is not contiguous. This can happen when a device, such as a network interface card or a disk controller, requires access to a large amount of memory that is not available as a single contiguous block.
+      nodeTimeseries.new(
+        'Memory Bounce',
+        description=|||
+          Memory bounce is a technique used in the Linux kernel to handle situations where direct memory access (DMA) is required but the physical memory being accessed is not contiguous. This can happen when a device, such as a network interface card or a disk controller, requires access to a large amount of memory that is not available as a single contiguous block.
 
-        To handle this situation, the kernel uses a technique called memory bouncing. In memory bouncing, the kernel sets up a temporary buffer in physical memory that is large enough to hold the entire data block being transferred by the device. The data is then copied from the non-contiguous source memory to the temporary buffer, which is physically contiguous.
+          To handle this situation, the kernel uses a technique called memory bouncing. In memory bouncing, the kernel sets up a temporary buffer in physical memory that is large enough to hold the entire data block being transferred by the device. The data is then copied from the non-contiguous source memory to the temporary buffer, which is physically contiguous.
 
-        Bounce: Memory used for block device bounce buffers.
-      |||)
+          Bounce: Memory used for block device bounce buffers.
+        |||
+      )
       .withUnits('decbytes')
       .addTarget(commonPromTarget(
         expr='node_memory_Bounce_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector },

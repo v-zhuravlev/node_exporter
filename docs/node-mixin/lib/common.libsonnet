@@ -317,7 +317,10 @@ local nodeTimeseries = nodePanels.timeseries;
     panelsWithTargets:: {
       // cpu
       idleCPU::
-        nodePanels.timeseries.new('CPU Usage')
+        nodePanels.timeseries.new(
+          'CPU Usage',
+          description='Total CPU utilisation percent.'
+        )
         .withUnits('percent')
         .withStacking('normal')
         .withMin(0)
@@ -328,7 +331,10 @@ local nodeTimeseries = nodePanels.timeseries;
         )),
 
       systemLoad::
-        nodePanels.timeseries.new('Load Average')
+        nodePanels.timeseries.new(
+          'Load Average',
+          description='System load average over the previous 1, 5, and 15 minute ranges. A measurement of how many processes are waiting for CPU cycles. The maximum number is the number of CPU cores for the node.',
+        )
         .withUnits('short')
         .withMin(0)
         .withFillOpacity(0)
@@ -562,7 +568,17 @@ local nodeTimeseries = nodePanels.timeseries;
         .withUnits('bytes'),
       memoryGraph::
         if platform == 'Linux' then
-          self.memoryGraphPanelPrototype { stack: true }
+          self.memoryGraphPanelPrototype
+          {
+            description: |||
+              Used: The amount of physical memory currently in use by the system.
+              Cached: The amount of physical memory used for caching data from disk. The Linux kernel uses available memory to cache data that is read from or written to disk. This helps speed up disk access times.
+              Free: The amount of physical memory that is currently not in use.
+              Buffers: The amount of physical memory used for temporary storage of data being transferred between devices or applications.
+              Available: The amount of physical memory that is available for use by applications. This takes into account memory that is currently being used for caching but can be freed up if needed.
+            |||,
+          }
+          { stack: true }
           .addTarget(c.commonPromTarget(
             |||
               (
@@ -575,11 +591,13 @@ local nodeTimeseries = nodePanels.timeseries;
                 node_memory_Cached_bytes{%(nodeQuerySelector)s}
               )
             ||| % config { nodeQuerySelector: c.nodeQuerySelector },
-            legendFormat='memory used'
+            legendFormat='Memory used'
           ))
-          .addTarget(c.commonPromTarget('node_memory_Buffers_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='memory buffers'))
-          .addTarget(c.commonPromTarget('node_memory_Cached_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='memory cached'))
-          .addTarget(c.commonPromTarget('node_memory_MemFree_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='memory free'))
+          .addTarget(c.commonPromTarget('node_memory_Buffers_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='Memory buffers'))
+          .addTarget(c.commonPromTarget('node_memory_Cached_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='Memory cached'))
+          .addTarget(c.commonPromTarget('node_memory_MemFree_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='Memory free'))
+          .addTarget(c.commonPromTarget('node_memory_MemAvailable_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='Memory available'))
+          .addTarget(c.commonPromTarget('node_memory_MemTotal_bytes{%(nodeQuerySelector)s}' % config { nodeQuerySelector: c.nodeQuerySelector }, legendFormat='Memory total'))
         else if platform == 'Darwin' then
           // not useful to stack
           self.memoryGraphPanelPrototype { stack: false }
