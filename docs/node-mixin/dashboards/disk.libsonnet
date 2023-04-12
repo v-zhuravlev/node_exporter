@@ -89,7 +89,7 @@ local common = import '../lib/common.libsonnet';
         title='Disk Average Wait Time',
         description='The average time for requests issued to the device to be served. This includes the time spent by the requests in queue and the time spent servicing them.'
       )
-      .withUnits('seconds')
+      .withUnits('s')
       .withNegativeYByRegex('read')
       .withAxisLabel('read(-) / write(+)')
       .addTarget(commonPromTarget(

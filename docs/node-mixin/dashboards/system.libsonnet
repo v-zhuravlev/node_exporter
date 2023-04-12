@@ -31,7 +31,7 @@ local common = import '../lib/common.libsonnet';
 
     local timeSyncDrift =
       nodeTimeseries.new('Time Syncronized Drift')
-      .withUnits('seconds')
+      .withUnits('s')
       .addTarget(commonPromTarget(
         expr=q.node_timex_estimated_error_seconds,
         legendFormat='Estimated error in seconds',
